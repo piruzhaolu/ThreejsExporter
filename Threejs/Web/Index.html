@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Unity </title>
+</head>
+<body>
+<script type="module">
+   // import * as threejs from "../build/three.js";
+    import * as THREE from "../build/three.module.js";
+    import { OrbitControls } from './OrbitControls.js';
+    var renderer,camera,scene;
+    var geometry;
+    init();
+    animate();
+
+    function init(){
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize( window.innerWidth, window.innerHeight );
+        document.body.appendChild( renderer.domElement );
+
+        camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 2000 );
+        camera.position.set( 0, 0, -10 );
+        camera.lookAt( 0, 0, 0 );
+
+        scene = new THREE.Scene();
+
+
+        window.addEventListener( 'resize', onWindowResize, false );
+
+        var controls = new OrbitControls( camera, renderer.domElement );
+        //controls.maxPolarAngle = Math.PI * 0.5;
+        controls.minDistance = 0;
+        controls.maxDistance = 5000;
+        downFile();
+    }
+
+    function downFile() {
+        let xhr = new XMLHttpRequest();
+        xhr.open('GET', "./t.bin");
+        xhr.responseType = 'arraybuffer';
+
+        xhr.onload = function () {
+            let arrayBuffer = xhr.response;
+            let length = new Int32Array(arrayBuffer, 0, 1)[0];
+            let headView = new DataView(arrayBuffer, 4,length*4*4);
+            console.log(headView);
+
+            let fileData = new Map();
+
+            for (let i = 0; i < length;i++){
+
+                let id = headView.getInt32(i*4*4,true);
+                let dataType = headView.getInt32(i*4*4+4,true);
+                let offset = headView.getInt32(i*4*4+8,true);
+                let byteLength = headView.getInt32(i*4*4+12,true);
+                console.log(id,dataType,offset,byteLength);
+                fileData.set(id, arrayBuffer.slice(offset, offset+byteLength));// new Int8Array(arrayBuffer,offset, byteLength);
+            }
+
+
+            let geometry = new THREE.BufferGeometry();
+            let vertices = new Float32Array(fileData.get(0));
+            console.log(fileData);
+            geometry.setIndex( [...new Int32Array(fileData.get(1))]);
+            geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+            let material = new THREE.MeshBasicMaterial( { color: 0xff9900 } );
+            let mesh = new THREE.Mesh( geometry, material );
+            scene.add( mesh );
+
+        };
+
+        xhr.send();
+    }
+
+
+
+
+    function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+
+        renderer.setSize( window.innerWidth, window.innerHeight );
+
+    }
+
+    function animate(){
+        requestAnimationFrame( animate );
+        //console.log(camera.position);
+        renderer.render( scene, camera );
+    }
+
+</script>
+</body>
+</html>
