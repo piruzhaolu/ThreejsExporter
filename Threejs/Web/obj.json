@@ -1,0 +1,24 @@
+{
+  "metadata": {
+    "type": "object"
+  },
+  "objects": [
+    {
+      "id": "",
+      "type": "",
+      "matrix": [],
+      "geometry": "ad",
+      "material": "",
+      "children": []
+    }
+  ],
+  "materials": [],
+  "geometries": [
+    {
+      "id": "ad",
+      "type": "",
+      "attr_position": "./t.bin#0",
+      "indexs": "./t.bin#1"
+    }
+  ]
+}

@@ -10,6 +10,7 @@
     import * as THREE from "../build/three.module.js";
     import { OrbitControls } from './OrbitControls.js';
     import {BundleLoader} from "../Loader/BundleLoader.js";
+    import {ObjectLoader} from "../Loader/ObjectLoader.js";
 
     var renderer,camera,scene;
     var geometry;
@@ -35,11 +36,9 @@
         controls.minDistance = 0;
         controls.maxDistance = 5000;
 
-        var loader = new BundleLoader();
-        loader.load("./t.bin", function (_) {
-            scene.add(loader.get());
-            console.log(loader.get(0));
-            console.log(JSON.stringify(scene.toJSON()));
+        var loader = new ObjectLoader();
+        loader.load("./obj.json", function (_) {
+            loader.addTo(scene);
         });
 
         //downFile();

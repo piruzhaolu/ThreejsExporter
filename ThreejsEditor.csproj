@@ -60,6 +60,7 @@
   <ItemGroup>
      <Compile Include="D:\github\ThreejsExporter\Packages\ThreejsEditor\Exporter\BinBundle.cs" />
      <Compile Include="D:\github\ThreejsExporter\Packages\ThreejsEditor\Exporter\BytesUtility.cs" />
+     <Compile Include="D:\github\ThreejsExporter\Packages\ThreejsEditor\Exporter\Serializer\ObjectSerializer.cs" />
      <None Include="D:\github\ThreejsExporter\Packages\ThreejsEditor\ThreejsEditor.asmdef" />
  <Reference Include="UnityEditor.UI">
  <HintPath>D:/github/ThreejsExporter/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>

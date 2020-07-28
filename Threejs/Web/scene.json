@@ -1,12 +1,29 @@
 {
-  "object": {
-    "uuid":"",
-    "type": "Scene",
-    "matrix": [],
-    "children": [
-      {
+  "metadata": {
 
-      }
-    ]
-  }
+  },
+  "geometries": [
+    {
+      "id": "",
+      "type": ""
+    }
+  ],
+  "materials": [
+    {
+      "id": "",
+      "type": "",
+      "color": ""
+    }
+  ],
+
+  "object": [
+    {
+      "id":"",
+      "type": "Scene",
+      "matrix": [],
+      "children": [],
+      "geometry":"",
+      "material":""
+    }
+  ]
 }
