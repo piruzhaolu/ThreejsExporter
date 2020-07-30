@@ -16,7 +16,7 @@ namespace Piruzhaolu.ThreejsEditor
         
         private readonly Dictionary<int, BinFile> _datas = new Dictionary<int, BinFile>();
 
-        public void Add(byte[] data, int dataType = 0)
+        public int Add(byte[] data, int dataType = 0)
         {
             while (_datas.ContainsKey(_index))
             {
@@ -27,16 +27,17 @@ namespace Piruzhaolu.ThreejsEditor
                 DataType = dataType,
                 Bytes = data
             });
-            _index++;
+            return _index++;
         }
 
-        public void Add(int id, byte[] data, int dataType = 0)
+        public int Add(int id, byte[] data, int dataType = 0)
         {
             _datas.Add(id, new BinFile
             {
                 Bytes = data,
                 DataType = dataType
             });
+            return id;
         }
 
 
@@ -61,8 +62,6 @@ namespace Piruzhaolu.ThreejsEditor
                     foreach (var kv in _datas)
                     {
                         bw.Write(kv.Value.Bytes);
-                        Debug.Log(kv.Key);
-                        Debug.Log(kv.Value.Bytes.Length);
                     }
                 }
                 return ms.ToArray();

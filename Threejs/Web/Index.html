@@ -37,16 +37,18 @@
         controls.maxDistance = 5000;
 
         var loader = new ObjectLoader();
-        loader.load("./obj.json", function (_) {
+        loader.load("../assets/SampleScene.scene", function (_) {
             loader.addTo(scene);
         });
 
-        //downFile();
+        //var mesh = new THREE.Mesh(new THREE.CubeGeometry(2,2), new THREE.MeshBasicMaterial());
+       // scene.add(mesh);
+       // downFile();
     }
 
     function downFile() {
         let xhr = new XMLHttpRequest();
-        xhr.open('GET', "./t.bin");
+        xhr.open('GET', "../assets/0000000000000000e000000000000000_Cube");
         xhr.responseType = 'arraybuffer';
 
         xhr.onload = function () {

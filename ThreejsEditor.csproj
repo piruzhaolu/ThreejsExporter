@@ -58,9 +58,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="D:\github\ThreejsExporter\Packages\ThreejsEditor\Exporter\Assets\AssetDatabase.cs" />
+     <Compile Include="D:\github\ThreejsExporter\Packages\ThreejsEditor\Exporter\Assets\Meta.cs" />
      <Compile Include="D:\github\ThreejsExporter\Packages\ThreejsEditor\Exporter\BinBundle.cs" />
      <Compile Include="D:\github\ThreejsExporter\Packages\ThreejsEditor\Exporter\BytesUtility.cs" />
+     <Compile Include="D:\github\ThreejsExporter\Packages\ThreejsEditor\Exporter\Serializer\IDGenerate.cs" />
      <Compile Include="D:\github\ThreejsExporter\Packages\ThreejsEditor\Exporter\Serializer\ObjectSerializer.cs" />
+     <None Include="D:\github\ThreejsExporter\Packages\ThreejsEditor\Plugins\net45\Newtonsoft.Json.xml" />
      <None Include="D:\github\ThreejsExporter\Packages\ThreejsEditor\ThreejsEditor.asmdef" />
  <Reference Include="UnityEditor.UI">
  <HintPath>D:/github/ThreejsExporter/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
@@ -253,6 +257,9 @@
  </Reference>
  <Reference Include="UnityEditor.WindowsStandalone.Extensions">
  <HintPath>C:/Program Files/Unity/Hub/Editor/2019.3.2f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll</HintPath>
+ </Reference>
+ <Reference Include="Newtonsoft.Json">
+ <HintPath>D:/github/ThreejsExporter/Packages/ThreejsEditor/Plugins/net45/Newtonsoft.Json.dll</HintPath>
  </Reference>
  <Reference Include="netstandard">
  <HintPath>C:/Program Files/Unity/Hub/Editor/2019.3.2f1/Editor/Data/NetStandard/ref/2.0.0/netstandard.dll</HintPath>
