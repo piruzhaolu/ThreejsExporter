@@ -19,6 +19,8 @@
 
     function init(){
         renderer = new THREE.WebGLRenderer();
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         renderer.setSize( window.innerWidth, window.innerHeight );
         document.body.appendChild( renderer.domElement );
 
@@ -27,6 +29,22 @@
         camera.lookAt( 0, 0, 0 );
 
         scene = new THREE.Scene();
+
+        let ambientLight = new THREE.AmbientLight( 0x333333 );	// 0.2
+        let light = new THREE.DirectionalLight( 0xFFFFFF, 1.0 );
+        scene.add(ambientLight);
+        scene.add(light);
+
+
+        var geometry = new THREE.SphereGeometry( 0.5, 32, 32 );
+        var material = new THREE.MeshLambertMaterial( {color: 0xffff00} );
+        var sphere = new THREE.Mesh( geometry, material );
+        sphere.castShadow = true; //default is false
+        sphere.receiveShadow = false; //default
+        scene.add( sphere );
+
+        // var helper = new THREE.CameraHelper( light.shadow.camera );
+        // scene.add( helper );
 
 
         window.addEventListener( 'resize', onWindowResize, false );
@@ -75,6 +93,7 @@
             console.log(fileData);
             geometry.setIndex( [...new Int32Array(fileData.get(1))]);
             geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+
             let material = new THREE.MeshBasicMaterial( { color: 0xff9900 } );
             let mesh = new THREE.Mesh( geometry, material );
             scene.add( mesh );

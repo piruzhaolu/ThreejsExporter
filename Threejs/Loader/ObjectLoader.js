@@ -40,6 +40,14 @@ export class ObjectLoader extends THREE.FileLoader {
                                 target.setIndex([...new Int32Array(arrayBuffer)]);
                             }
                         });
+                        mThis._asyncLoadArray.push({
+                            target:geometry,
+                            path:geo.attr_normal,
+                            callback:function (target, arrayBuffer) {
+                                let normal = new Float32Array(arrayBuffer);
+                                target.setAttribute('normal', new THREE.BufferAttribute(normal, 3));
+                            }
+                        });
                     }
 
                     let objects = objAsJson.objects;
@@ -48,7 +56,7 @@ export class ObjectLoader extends THREE.FileLoader {
                         i++;
                         if (obj.geometry == "") continue;
                         let geometry = mThis._geometrieMap.get(obj.geometry);
-                        let material = new THREE.MeshBasicMaterial({color: 0xff9999});
+                        let material = new THREE.MeshLambertMaterial({color: 0xff9999});
                         let mesh = new THREE.Mesh(geometry, material);
                         // mesh.applyMatrix4(new THREE.Matrix4().set([...obj.matrix]));
                         mesh.position.set(...obj.position);

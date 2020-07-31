@@ -98,6 +98,7 @@ namespace Piruzhaolu.ThreejsEditor
             var binBindle = new BinBundle();
             geo.attr_position = $"{id}#{binBindle.Add(BytesUtility.ToBytes(mesh.vertices))}";
             geo.indexs = $"{id}#{binBindle.Add(BytesUtility.ToBytes(mesh.triangles))}";
+            geo.attr_normal = $"{id}#{binBindle.Add(BytesUtility.ToBytes(mesh.normals))}";
             
             var bytes = binBindle.ToBytes();
             var json = JsonUtility.ToJson(geo);

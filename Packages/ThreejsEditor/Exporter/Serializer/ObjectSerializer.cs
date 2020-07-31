@@ -51,6 +51,9 @@ namespace Piruzhaolu.ThreejsEditor
             var pos = gameObject.transform.localPosition;
             obj.position = new []{pos.x,pos.y,pos.z};
             
+            var m = Matrix4x4.identity;
+            //m.SetTRS(translation, rotation, scale);
+            
             var meshFilter = gameObject.GetComponent<MeshFilter>();
             if (meshFilter != null)
             {
@@ -101,6 +104,7 @@ namespace Piruzhaolu.ThreejsEditor
         public string id;
         public string type;
         public float[] position;
+        public float[] matrix;
         public string geometry;
         public string material;
         public List<string> children;
@@ -120,6 +124,7 @@ namespace Piruzhaolu.ThreejsEditor
         public string id;
         public string type;
         public string attr_position;
+        public string attr_normal;
         public string indexs;
 
     }
