@@ -27,6 +27,7 @@ namespace Piruzhaolu.ThreejsEditor
             var objPack = new ObjPack();
             var scene = SceneManager.GetActiveScene();
             var allGameObjects = scene.GetRootGameObjects();
+            CreateObjectID(allGameObjects);
             Serialize(allGameObjects, objPack);
             var json = JsonUtility.ToJson(objPack);
             AssetDatabase.SaveScene(json, scene.name);
@@ -34,6 +35,33 @@ namespace Piruzhaolu.ThreejsEditor
 
        
 #endif
+
+        private static void CreateObjectID(GameObject[] gameObjects)
+        {
+            foreach (var o in gameObjects)
+            {
+                CreateObjectID(o);
+            }
+        }
+        
+        private static void CreateObjectID(GameObject gameObject)
+        {
+            if (!gameObject.TryGetComponent<ObjectID>(out _))
+            {
+                var objectID = gameObject.AddComponent<ObjectID>();
+                objectID.ID = IDGenerate.Generate();
+            }
+
+            if (gameObject.transform.childCount > 0)
+            {
+                for (var i = 0; i < gameObject.transform.childCount; i++)
+                {
+                    CreateObjectID(gameObject.transform.GetChild(i).gameObject);
+                }
+            }
+            
+        }
+        
 
         public static void Serialize(GameObject[] gameObjects, ObjPack objPack)
         {
@@ -46,24 +74,61 @@ namespace Piruzhaolu.ThreejsEditor
 
         public static void Serialize(GameObject gameObject, ObjPack objPack)
         {
+            if (!gameObject.TryGetComponent<ObjectID>(out var objectID))
+            {
+                return;
+            }
             var obj = new Obj();
-            obj.id = IDGenerate.Generate().ToString();
+            obj.type = "group";
+            obj.id = objectID.ID.ToString();
             var pos = gameObject.transform.localPosition;
             obj.position = new []{pos.x,pos.y,pos.z};
+            var q = gameObject.transform.rotation;
+            obj.quaternion = new[] {q.x, q.y, q.z, q.w};
             
-            var m = Matrix4x4.identity;
+            //var m = Matrix4x4.identity;
             //m.SetTRS(translation, rotation, scale);
-            
-            var meshFilter = gameObject.GetComponent<MeshFilter>();
-            if (meshFilter != null)
-            {
-                var geometrie = AssetDatabase.Save<Geometrie>(meshFilter.sharedMesh);
-                objPack.geometries.Add(geometrie);
-                obj.geometry = geometrie.id;
-            }
 
+            if (gameObject.TryGetComponent<MeshFilter>(out var meshFilter))
+            {
+                var geometrie = AssetDatabase.TrySave<Geometrie>(meshFilter.sharedMesh);
+                if (geometrie != null)
+                {
+                    obj.type = "mesh";
+                    objPack.Add(geometrie);
+                    obj.geometry = geometrie.id;
+                }
+            }
+            if (gameObject.TryGetComponent<MeshRenderer>(out var meshRenderer))
+            {
+                if (meshRenderer.sharedMaterials.Length > 1)
+                {
+                    var list = new List<string>();
+                    for (var i = 0; i < meshRenderer.sharedMaterials.Length; i++)
+                    {
+                        var mat = AssetDatabase.TrySave<Mat>(meshRenderer.sharedMaterials[i]);
+                        if (mat != null)
+                        {
+                            objPack.Add(mat);
+                            list.Add(mat.id);
+                        }
+                    }
+                    obj.materials = list.ToArray();
+                }
+                else
+                {
+                    var mat = AssetDatabase.TrySave<Mat>( meshRenderer.sharedMaterial);
+                    if (mat != null)
+                    {
+                        objPack.Add(mat);
+                        obj.material = mat.id;
+                    }
+                }
+            }
             objPack.objects.Add(obj);
         }
+        
+        
 
         private static float[] MatrixToArray(Matrix4x4 m)
         {
@@ -81,53 +146,17 @@ namespace Piruzhaolu.ThreejsEditor
     
     
 
-    [Serializable]
-    public class ObjPack
-    {
-        public Metadata metadata = new Metadata();
-        public List<Obj> objects = new List<Obj>();
-        public List<Mat> materials = new List<Mat>();
-        public List<Geometrie> geometries = new List<Geometrie>();
-    }
+   
 
     
-    [Serializable]
-    public class Metadata
-    {
-        public string type = "object";
-    }
+    
     
 
-    [Serializable]
-    public class Obj
-    {
-        public string id;
-        public string type;
-        public float[] position;
-        public float[] matrix;
-        public string geometry;
-        public string material;
-        public List<string> children;
-    }
-
-    [Serializable]
-    public class Mat
-    {
-        public string id;
-        public string type;
-        public string color;
-    }
     
-    [Serializable]
-    public class Geometrie
-    {
-        public string id;
-        public string type;
-        public string attr_position;
-        public string attr_normal;
-        public string indexs;
 
-    }
+    
+    
+    
     
     
 }

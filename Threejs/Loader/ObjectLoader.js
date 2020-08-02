@@ -4,12 +4,14 @@ import {BundleLoader} from "./BundleLoader.js";
 export class ObjectLoader extends THREE.FileLoader {
 
     _geometrieMap;
+    _materialMap;
     _objectMap;
     _asyncLoadArray;
 
     constructor() {
         super();
         this._geometrieMap = new Map();
+        this._materialMap = new Map();
         this._objectMap = new Map();
         this._asyncLoadArray = [];
     }
@@ -24,6 +26,13 @@ export class ObjectLoader extends THREE.FileLoader {
                     let geometries = objAsJson.geometries;
                     for (let geo of geometries) {
                         let geometry = new THREE.BufferGeometry();
+                        if (Array.isArray(geo.groups) && geo.groups.length>0){
+                            for (let i = 0; i < geo.groups.length; i++){
+                                let sub = geo.groups[i];
+                                geometry.addGroup(sub.start, sub.count, sub.materialIndex);
+                            }
+                        }
+
                         mThis._geometrieMap.set(geo.id, geometry);
                         mThis._asyncLoadArray.push({
                             target: geometry,
@@ -50,16 +59,39 @@ export class ObjectLoader extends THREE.FileLoader {
                         });
                     }
 
+                    let materials = objAsJson.materials;
+                    for (let mat of materials){
+
+                        let m = new THREE.MeshLambertMaterial();
+                        if (Array.isArray(mat.color)){
+                            m.color = new THREE.Color(mat.color[0],mat.color[1],mat.color[2]);
+                        }
+                        mThis._materialMap.set(mat.id, m);
+                    }
+
+
+
                     let objects = objAsJson.objects;
-                    var i = 0;
                     for (let obj of objects) {
-                        i++;
                         if (obj.geometry == "") continue;
                         let geometry = mThis._geometrieMap.get(obj.geometry);
-                        let material = new THREE.MeshLambertMaterial({color: 0xff9999});
+                        let material;
+                        if (Array.isArray(obj.materials) && obj.materials.length>0){
+                            material = [];
+                            for (let i = 0; i < obj.materials.length;i++){
+                                material[i] = mThis._materialMap.get(obj.materials[i]);
+                            }
+                            // for (let matElement of obj.materials) {
+                            //     material.push(mThis._materialMap.get(matElement));
+                            // }
+                            //material = material[2];
+                        }else{
+                            material = mThis._materialMap.get(obj.material);// new THREE.MeshLambertMaterial({color: 0xff9999});
+                        }
                         let mesh = new THREE.Mesh(geometry, material);
                         // mesh.applyMatrix4(new THREE.Matrix4().set([...obj.matrix]));
                         mesh.position.set(...obj.position);
+                        mesh.quaternion.set(...obj.quaternion);
                         mThis._objectMap.set(obj.id, mesh);
                     }
 

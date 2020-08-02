@@ -15,12 +15,12 @@ namespace Piruzhaolu.ThreejsEditor
         public static string AssetPath = Path.Combine(Path.GetDirectoryName(Application.dataPath),"Threejs/assets");
 
         private static Dictionary<string, object> _database = null;
+        private static readonly int BaseColor = Shader.PropertyToID("_BaseColor");
 
         public static Dictionary<string, object> Database
         {
             get
             {
-                
                 if (_database != null) return _database;
                 _database = new Dictionary<string, object>();
                 var files = Directory.GetFiles(AssetPath);
@@ -56,29 +56,72 @@ namespace Piruzhaolu.ThreejsEditor
             }
         }
 
+        public static bool Has(UnityEngine.Object obj)
+        {
+            var guid = ObjectFullID(obj);
+            return Has(guid);
+        }
 
         public static bool Has(string guid)
         {
             return Database.ContainsKey(guid);
         }
+        
+        
 
 
         public static void SaveScene(string json, string name)
         {
             File.WriteAllText($"{AssetPath}/{name}.scene", json);
         }
-        
 
 
-        public static T Save<T>(Object obj) where T : class
+
+        public static string ObjectFullID(Object obj)
         {
             var path = UnityEditor.AssetDatabase.GetAssetPath(obj);
             var guid = UnityEditor.AssetDatabase.AssetPathToGUID(path);
             var all = UnityEditor.AssetDatabase.LoadAllAssetsAtPath(path);
-            if (all.Length > 0)
+            if (all.Length > 1)
             {
                 guid += $"_{obj.name}";
             }
+
+            return guid;
+        }
+
+        
+        public static T TrySave<T>(Object obj) where T : class
+        {
+            var guid = ObjectFullID(obj);
+            T value;
+            if (Has(guid))
+            {
+                value = Database[guid] as T;
+            }
+            else
+            {
+                value = Save<T>(obj,guid);
+            }
+
+            return value;
+        }
+
+        public static void Save(Object obj)
+        {
+            Save<object>(obj);
+        }
+
+
+        public static T Save<T>(Object obj) where T : class
+        {
+            var guid = ObjectFullID(obj);
+            return Save<T>(obj, guid);
+        }
+        
+        internal static T Save<T>(Object obj, string fullID) where T : class
+        {
+            var guid = fullID;
 
             object returnValue = null;
             switch (obj)
@@ -86,10 +129,25 @@ namespace Piruzhaolu.ThreejsEditor
                 case Mesh mesh:
                     returnValue = SaveMesh(mesh, guid);
                     break;
+                case Material material:
+                    returnValue = SaveMaterial(material, guid);
+                    break;
+                default:
+                    return null;
             }
+
+            Database[guid] = returnValue;
             return returnValue as T;
         }
 
+
+        private static Mat SaveMaterial(Material material, string id)
+        {
+            var mat = new Mat{id = id, type = "mat"};
+            var c = material.GetColor(BaseColor);
+            mat.color = new[] {c.r, c.g, c.b};
+            return mat;
+        }
         
         private static Geometrie SaveMesh(Mesh mesh, string id)
         {
@@ -99,6 +157,19 @@ namespace Piruzhaolu.ThreejsEditor
             geo.attr_position = $"{id}#{binBindle.Add(BytesUtility.ToBytes(mesh.vertices))}";
             geo.indexs = $"{id}#{binBindle.Add(BytesUtility.ToBytes(mesh.triangles))}";
             geo.attr_normal = $"{id}#{binBindle.Add(BytesUtility.ToBytes(mesh.normals))}";
+            
+            var subList = new List<Geometrie.Sub>();
+            for (var i = 0; i < mesh.subMeshCount; i++)
+            {
+                var subMesh = mesh.GetSubMesh(i);
+                var sub = new Geometrie.Sub {start = subMesh.indexStart, count = subMesh.indexCount, materialIndex = i};
+                subList.Add(sub);
+            }
+
+            if (subList.Count > 0)
+            {
+                geo.groups = subList.ToArray();
+            }
             
             var bytes = binBindle.ToBytes();
             var json = JsonUtility.ToJson(geo);
