@@ -40,6 +40,7 @@ export class ObjectLoader extends THREE.FileLoader {
                             callback: function (target, arrayBuffer) {
                                 let vertices = new Float32Array(arrayBuffer);
                                 target.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+                                target.computeBoundingSphere();
                             }
                         });
                         mThis._asyncLoadArray.push({
@@ -47,6 +48,7 @@ export class ObjectLoader extends THREE.FileLoader {
                             path: geo.indexs,
                             callback: function (target, arrayBuffer) {
                                 target.setIndex([...new Int32Array(arrayBuffer)]);
+                                target.computeBoundingSphere();
                             }
                         });
                         mThis._asyncLoadArray.push({
@@ -62,10 +64,13 @@ export class ObjectLoader extends THREE.FileLoader {
                     let materials = objAsJson.materials;
                     for (let mat of materials){
 
-                        let m = new THREE.MeshLambertMaterial();
+                        let m = new THREE.MeshStandardMaterial();
                         if (Array.isArray(mat.color)){
                             m.color = new THREE.Color(mat.color[0],mat.color[1],mat.color[2]);
                         }
+                        m.emissive = new THREE.Color(0.2,0.2,0.2);
+                        m.emissiveIntensity = 0.2;
+                        m.metalness = 0.5;
                         mThis._materialMap.set(mat.id, m);
                     }
 
