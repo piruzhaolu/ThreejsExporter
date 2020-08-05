@@ -72,7 +72,7 @@ namespace Piruzhaolu.ThreejsEditor
         }
         
 
-        public static void Serialize(GameObject gameObject, ObjPack objPack)
+        public static void Serialize(GameObject gameObject, ObjPack objPack, string parent = "")
         {
             if (!gameObject.TryGetComponent<ObjectID>(out var objectID))
             {
@@ -83,8 +83,9 @@ namespace Piruzhaolu.ThreejsEditor
             obj.id = objectID.ID.ToString();
             var pos = gameObject.transform.localPosition;
             obj.position = new []{pos.x,pos.y,pos.z};
-            var q = gameObject.transform.rotation;
+            var q = gameObject.transform.localRotation;
             obj.quaternion = new[] {q.x, q.y, q.z, q.w};
+            obj.parent = parent;
             
             //var m = Matrix4x4.identity;
             //m.SetTRS(translation, rotation, scale);
@@ -126,6 +127,16 @@ namespace Piruzhaolu.ThreejsEditor
                 }
             }
             objPack.objects.Add(obj);
+
+            var childCount = gameObject.transform.childCount;
+            if (childCount > 0)
+            {
+                for (var i = 0; i < childCount; i++)
+                {
+                    var childGo = gameObject.transform.GetChild(i).gameObject;
+                    Serialize(childGo, objPack, obj.id);
+                }
+            }
         }
         
         

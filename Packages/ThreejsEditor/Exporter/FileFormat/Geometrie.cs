@@ -9,6 +9,7 @@ namespace Piruzhaolu.ThreejsEditor
         public string type;
         public string attr_position;
         public string attr_normal;
+        public string attr_uv;
         public string indexs;
         public Sub[] groups;
 

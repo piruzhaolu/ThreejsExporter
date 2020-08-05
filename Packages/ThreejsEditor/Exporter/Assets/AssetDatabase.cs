@@ -16,6 +16,7 @@ namespace Piruzhaolu.ThreejsEditor
 
         private static Dictionary<string, object> _database = null;
         private static readonly int BaseColor = Shader.PropertyToID("_BaseColor");
+        private static readonly int BaseMap = Shader.PropertyToID("_BaseMap");
 
         public static Dictionary<string, object> Database
         {
@@ -146,7 +147,44 @@ namespace Piruzhaolu.ThreejsEditor
             var mat = new Mat{id = id, type = "mat"};
             var c = material.GetColor(BaseColor);
             mat.color = new[] {c.r, c.g, c.b};
+            mat.map = SaveTexture(material.GetTexture(BaseMap) as Texture2D);
             return mat;
+        }
+
+        
+        private static string SaveTexture(Texture2D texture)
+        {
+            if (texture == null) return string.Empty;
+            
+            var assetPath = UnityEditor.AssetDatabase.GetAssetPath(texture);
+            var assetGuid = UnityEditor.AssetDatabase.AssetPathToGUID(assetPath);
+            if (string.IsNullOrEmpty(assetGuid)) return string.Empty;
+
+            var json = JsonUtility.ToJson(new Tex2d {id = assetGuid});
+            var png =  DuplicateTexture(texture).EncodeToPNG();
+            File.WriteAllText($"{AssetPath}/{assetGuid}.meta", json);
+            File.WriteAllBytes($"{AssetPath}/{assetGuid}", png);
+            return assetGuid;
+        }
+        
+        private static Texture2D DuplicateTexture(Texture2D source)
+        {
+            RenderTexture renderTex = RenderTexture.GetTemporary(
+                source.width,
+                source.height,
+                0,
+                RenderTextureFormat.Default,
+                RenderTextureReadWrite.Linear);
+
+            Graphics.Blit(source, renderTex);
+            RenderTexture previous = RenderTexture.active;
+            RenderTexture.active = renderTex;
+            Texture2D readableText = new Texture2D(source.width, source.height);
+            readableText.ReadPixels(new Rect(0, 0, renderTex.width, renderTex.height), 0, 0);
+            readableText.Apply();
+            RenderTexture.active = previous;
+            RenderTexture.ReleaseTemporary(renderTex);
+            return readableText;
         }
         
         private static Geometrie SaveMesh(Mesh mesh, string id)
@@ -157,7 +195,8 @@ namespace Piruzhaolu.ThreejsEditor
             geo.attr_position = $"{id}#{binBindle.Add(BytesUtility.ToBytes(mesh.vertices))}";
             geo.indexs = $"{id}#{binBindle.Add(BytesUtility.ToBytes(mesh.triangles))}";
             geo.attr_normal = $"{id}#{binBindle.Add(BytesUtility.ToBytes(mesh.normals))}";
-            
+            geo.attr_uv  = $"{id}#{binBindle.Add(BytesUtility.ToBytes(mesh.uv))}";
+             
             var subList = new List<Geometrie.Sub>();
             for (var i = 0; i < mesh.subMeshCount; i++)
             {

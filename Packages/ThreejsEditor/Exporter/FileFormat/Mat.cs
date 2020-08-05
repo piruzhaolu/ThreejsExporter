@@ -9,5 +9,6 @@ namespace Piruzhaolu.ThreejsEditor
         public string id;
         public string type;
         public float[] color;
+        public string map;
     }
 }

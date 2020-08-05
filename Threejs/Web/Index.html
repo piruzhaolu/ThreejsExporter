@@ -55,8 +55,9 @@
         controls.maxDistance = 5000;
 
         var loader = new ObjectLoader();
+        loader.setParent(scene);
         loader.load("../assets/SampleScene.scene", function (_) {
-            loader.addTo(scene);
+
         });
 
         //var mesh = new THREE.Mesh(new THREE.CubeGeometry(2,2), new THREE.MeshBasicMaterial());

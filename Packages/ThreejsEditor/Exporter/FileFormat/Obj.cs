@@ -14,6 +14,6 @@ namespace Piruzhaolu.ThreejsEditor
         public string geometry;
         public string material;
         public string[] materials;
-        public List<string> children;
+        public string parent;
     }
 }

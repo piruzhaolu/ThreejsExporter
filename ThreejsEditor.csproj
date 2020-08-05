@@ -69,6 +69,7 @@
      <Compile Include="D:\github\ThreejsExporter\Packages\ThreejsEditor\Exporter\FileFormat\Metadata.cs" />
      <Compile Include="D:\github\ThreejsExporter\Packages\ThreejsEditor\Exporter\FileFormat\Obj.cs" />
      <Compile Include="D:\github\ThreejsExporter\Packages\ThreejsEditor\Exporter\FileFormat\ObjPack.cs" />
+     <Compile Include="D:\github\ThreejsExporter\Packages\ThreejsEditor\Exporter\FileFormat\Tex2d.cs" />
      <Compile Include="D:\github\ThreejsExporter\Packages\ThreejsEditor\Exporter\Serializer\IDGenerate.cs" />
      <Compile Include="D:\github\ThreejsExporter\Packages\ThreejsEditor\Exporter\Serializer\ObjectSerializer.cs" />
      <None Include="D:\github\ThreejsExporter\Packages\ThreejsEditor\Plugins\net45\Newtonsoft.Json.xml" />

@@ -7,6 +7,7 @@ export class ObjectLoader extends THREE.FileLoader {
     _materialMap;
     _objectMap;
     _asyncLoadArray;
+    _parent;
 
     constructor() {
         super();
@@ -16,6 +17,9 @@ export class ObjectLoader extends THREE.FileLoader {
         this._asyncLoadArray = [];
     }
 
+    setParent(parent){
+        this._parent = parent;
+    }
 
     load(url, onLoad, onProgress, onError) {
         let mThis = this;
@@ -59,6 +63,14 @@ export class ObjectLoader extends THREE.FileLoader {
                                 target.setAttribute('normal', new THREE.BufferAttribute(normal, 3));
                             }
                         });
+                        mThis._asyncLoadArray.push({
+                            target:geometry,
+                            path:geo.attr_uv,
+                            callback:function (target, arrayBuffer) {
+                                let uv = new Float32Array(arrayBuffer);
+                                target.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+                            }
+                        });
                     }
 
                     let materials = objAsJson.materials;
@@ -68,9 +80,12 @@ export class ObjectLoader extends THREE.FileLoader {
                         if (Array.isArray(mat.color)){
                             m.color = new THREE.Color(mat.color[0],mat.color[1],mat.color[2]);
                         }
-                        m.emissive = new THREE.Color(0.2,0.2,0.2);
-                        m.emissiveIntensity = 0.2;
-                        m.metalness = 0.5;
+                        if (typeof mat.map == 'string' && mat.map.length>0){
+                            m.map = new THREE.TextureLoader().load("../assets/" + mat.map);
+                        }
+                        // m.emissive = new THREE.Color(0.2,0.2,0.2);
+                        // m.emissiveIntensity = 0.2;
+                        // m.metalness = 0.5;
                         mThis._materialMap.set(mat.id, m);
                     }
 
@@ -95,6 +110,13 @@ export class ObjectLoader extends THREE.FileLoader {
                         }
                         let mesh = new THREE.Mesh(geometry, material);
                         // mesh.applyMatrix4(new THREE.Matrix4().set([...obj.matrix]));
+                        let parentObj = mThis._objectMap.get(obj.parent);
+                        if (parentObj != undefined){
+                            //mesh.parent = parentObj;
+                            parentObj.add(mesh);
+                        }else if (mThis._parent != undefined){
+                            mThis._parent.add(mesh);
+                        }
                         mesh.position.set(...obj.position);
                         mesh.quaternion.set(...obj.quaternion);
                         mThis._objectMap.set(obj.id, mesh);
