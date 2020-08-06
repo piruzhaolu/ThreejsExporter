@@ -3,11 +3,16 @@ import * as THREE from "../build/three.module.js";
 export class BundleLoader extends THREE.FileLoader {
 
     _map;
+    _listener
+    _listenerData;
+    _isDone;
 
     constructor() {
         super();
         this.setResponseType("arraybuffer");
-
+        this._listener = [];
+        this._listenerData = [];
+        this._isDone = false;
     }
 
 
@@ -30,7 +35,12 @@ export class BundleLoader extends THREE.FileLoader {
                     let byteLength = headView.getInt32(i * headItemLength + 12, true);
                     mThis._map.set(id, arrayBuffer.slice(offset, offset + byteLength));// new Int8Array(arrayBuffer,offset, byteLength);
                 }
-                onLoad(mThis);
+                if (onLoad != undefined) onLoad(mThis);
+                for (let i = 0; i < mThis._listener.length; i++){
+                    let id =  mThis._listenerData[i];
+                    mThis._listener[i](mThis.get(id));
+                }
+                mThis._isDone = true;
             },
             function (xhr) {
                 console.log((xhr.loaded / xhr.total * 100) + '% loaded');
@@ -40,7 +50,18 @@ export class BundleLoader extends THREE.FileLoader {
                 console.error('An error happened');
             }
         )
+        return mThis;
     }
+
+    addListener(listener, id) {
+        if (this._isDone){
+            listener(this.get(id));
+            return;
+        }
+        this._listener.push(listener);
+        this._listenerData.push(id);
+    }
+
 
     get(id) {
         // if (id === undefined){

@@ -94,6 +94,7 @@ namespace Piruzhaolu.ThreejsEditor
         
         public static T TrySave<T>(Object obj) where T : class
         {
+            if (obj == null) return null;
             var guid = ObjectFullID(obj);
             T value;
             if (Has(guid))
@@ -133,6 +134,9 @@ namespace Piruzhaolu.ThreejsEditor
                 case Material material:
                     returnValue = SaveMaterial(material, guid);
                     break;
+                case Texture2D texture2D:
+                    returnValue = SaveTexture(texture2D, guid);
+                    break;
                 default:
                     return null;
             }
@@ -147,24 +151,29 @@ namespace Piruzhaolu.ThreejsEditor
             var mat = new Mat{id = id, type = "mat"};
             var c = material.GetColor(BaseColor);
             mat.color = new[] {c.r, c.g, c.b};
-            mat.map = SaveTexture(material.GetTexture(BaseMap) as Texture2D);
+
+            var tex2d = TrySave<Tex2d>(material.GetTexture(BaseMap) as Texture2D);
+            if (tex2d != null) mat.map = tex2d.id;// SaveTexture(material.GetTexture(BaseMap) as Texture2D);
             return mat;
         }
 
         
-        private static string SaveTexture(Texture2D texture)
+        private static Tex2d SaveTexture(Texture2D texture, string assetGuid)
         {
-            if (texture == null) return string.Empty;
-            
-            var assetPath = UnityEditor.AssetDatabase.GetAssetPath(texture);
-            var assetGuid = UnityEditor.AssetDatabase.AssetPathToGUID(assetPath);
-            if (string.IsNullOrEmpty(assetGuid)) return string.Empty;
+            // if (texture == null) return string.Empty;
+            //
+            // var assetPath = UnityEditor.AssetDatabase.GetAssetPath(texture);
+            // var assetGuid = UnityEditor.AssetDatabase.AssetPathToGUID(assetPath);
+            // if (string.IsNullOrEmpty(assetGuid)) return string.Empty;
+            // if (Database.ContainsKey(assetGuid)) return assetGuid;
 
-            var json = JsonUtility.ToJson(new Tex2d {id = assetGuid});
+            var tex2d = new Tex2d {id = assetGuid};
+            var json = JsonUtility.ToJson(tex2d);
             var png =  DuplicateTexture(texture).EncodeToPNG();
             File.WriteAllText($"{AssetPath}/{assetGuid}.meta", json);
             File.WriteAllBytes($"{AssetPath}/{assetGuid}", png);
-            return assetGuid;
+            // Database[assetGuid] = tex2d;
+            return tex2d;
         }
         
         private static Texture2D DuplicateTexture(Texture2D source)
