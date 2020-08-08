@@ -83,6 +83,8 @@ export class ObjectLoader extends THREE.FileLoader {
                         }
                         mesh.position.set(...obj.position);
                         mesh.quaternion.set(...obj.quaternion);
+                        mesh.castShadow = true;
+                        mesh.receiveShadow = true;
                         mThis._objectMap.set(obj.id, mesh);
                     }
 
@@ -104,9 +106,16 @@ export class ObjectLoader extends THREE.FileLoader {
         if (Array.isArray(mat.color)){
             m.color = new THREE.Color(mat.color[0],mat.color[1],mat.color[2]);
         }
-        if (typeof mat.map == 'string' && mat.map.length>0){
+        if (typeof mat.map == 'string' && mat.map != ""){
             m.map = new THREE.TextureLoader().load( this._routing(mat.map));//TODO:不知道内部是否重复加载
         }
+
+        if (typeof mat.metalnessMap == 'string' && mat.metalnessMap != ""){
+            m.roughnessMap = new THREE.TextureLoader().load( this._routing(mat.metalnessMap));
+        }
+        m.metalness = mat.metalness;
+        console.log(mat.metalness);
+
         // m.emissive = new THREE.Color(0.2,0.2,0.2);
         // m.emissiveIntensity = 0.2;
         // m.metalness = 0.5;

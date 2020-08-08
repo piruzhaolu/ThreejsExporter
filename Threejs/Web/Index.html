@@ -37,7 +37,8 @@
 
 
         var geometry = new THREE.SphereGeometry( 0.5, 32, 32 );
-        var material = new THREE.MeshLambertMaterial( {color: 0xffff00} );
+        var material = new THREE.MeshStandardMaterial( {color: 0xffff00} );
+        material.metalness = 1;
         var sphere = new THREE.Mesh( geometry, material );
         sphere.castShadow = true; //default is false
         sphere.receiveShadow = false; //default
