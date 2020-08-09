@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using Piruzhaolu.ThreejsEditor;
@@ -9,6 +10,7 @@ public class NewBehaviourScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        return;
         var mesh = GetComponent<MeshFilter>().sharedMesh;
         var binBindle = new BinBundle();
         binBindle.Add(BytesUtility.ToBytes(mesh.vertices));
@@ -39,6 +41,7 @@ public class NewBehaviourScript : MonoBehaviour
     {
         
     }
+
 }
 
 public class Json

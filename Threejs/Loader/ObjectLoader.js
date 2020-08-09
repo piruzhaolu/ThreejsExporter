@@ -111,10 +111,10 @@ export class ObjectLoader extends THREE.FileLoader {
         }
 
         if (typeof mat.metalnessMap == 'string' && mat.metalnessMap != ""){
-            m.roughnessMap = new THREE.TextureLoader().load( this._routing(mat.metalnessMap));
+            m.metalnessMap = m.roughnessMap = new THREE.TextureLoader().load( this._routing(mat.metalnessMap));
         }
+        //m.metalness = 1;
         m.metalness = mat.metalness;
-        console.log(mat.metalness);
 
         // m.emissive = new THREE.Color(0.2,0.2,0.2);
         // m.emissiveIntensity = 0.2;

@@ -6,7 +6,7 @@
 </head>
 <body>
 <script type="module">
-   // import * as threejs from "../build/three.js";
+    //import * as threejs from "../build/three.js";
     import * as THREE from "../build/three.module.js";
     import { OrbitControls } from './OrbitControls.js';
     import {BundleLoader} from "../Loader/BundleLoader.js";
@@ -20,32 +20,51 @@
     function init(){
         renderer = new THREE.WebGLRenderer();
         renderer.shadowMap.enabled = true;
-        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.shadowMap.type = THREE.PCFShadowMap;
         renderer.setSize( window.innerWidth, window.innerHeight );
         document.body.appendChild( renderer.domElement );
 
-        camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 2000 );
+        camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 200 );
         camera.position.set( 0, 0, -10 );
         camera.lookAt( 0, 0, 0 );
 
         scene = new THREE.Scene();
+        scene.add( new THREE.AmbientLight( 0x666666 ) );
 
-        let ambientLight = new THREE.AmbientLight( 0x333333 );	// 0.2
         let light = new THREE.DirectionalLight( 0xFFFFFF, 1.0 );
-        scene.add(ambientLight);
+        light.position.set( -1, 1.75, 1 );
+        light.castShadow = true;
+
+        light.shadow.mapSize.width = 1024;  // default
+        light.shadow.mapSize.height = 1024; // default
+        light.shadow.camera.near = 0.01;    // default
+        light.shadow.camera.far = 100;     // default
+
+        var d = 20;
+        light.shadow.camera.left = - d;
+        light.shadow.camera.right = d;
+        light.shadow.camera.top = d;
+        light.shadow.camera.bottom = - d;
+
         scene.add(light);
 
 
-        var geometry = new THREE.SphereGeometry( 0.5, 32, 32 );
-        var material = new THREE.MeshStandardMaterial( {color: 0xffff00} );
-        material.metalness = 1;
-        var sphere = new THREE.Mesh( geometry, material );
-        sphere.castShadow = true; //default is false
-        sphere.receiveShadow = false; //default
-        scene.add( sphere );
-
-        // var helper = new THREE.CameraHelper( light.shadow.camera );
-        // scene.add( helper );
+        // var geometry = new THREE.SphereGeometry( 0.5, 32, 32 );
+        // var material = new THREE.MeshLambertMaterial( {color: 0xffff00} );
+        // var sphere = new THREE.Mesh( geometry, material );
+        // sphere.castShadow = true; //default is false
+        // sphere.receiveShadow = true; //default
+        // sphere.position.set(3.42,-3,14.13);
+        // scene.add( sphere );
+        //
+        // var material3 = new THREE.MeshLambertMaterial( {color: 0xFFFFFF} );
+        // var boxgeometry = new THREE.BoxGeometry(5, 1, 5 );
+        // var sphere2 = new THREE.Mesh( boxgeometry, material3 );
+        // sphere2.castShadow = true; //default is false
+        // sphere2.receiveShadow = true; //default
+        // sphere2.position.set(3.42,-4,14.13);
+        // sphere2.scale.set(1,1,1);
+        // scene.add( sphere2 );
 
 
         window.addEventListener( 'resize', onWindowResize, false );
@@ -61,48 +80,9 @@
 
         });
 
-        //var mesh = new THREE.Mesh(new THREE.CubeGeometry(2,2), new THREE.MeshBasicMaterial());
-       // scene.add(mesh);
-       // downFile();
-    }
 
-    function downFile() {
-        let xhr = new XMLHttpRequest();
-        xhr.open('GET', "../assets/0000000000000000e000000000000000_Cube");
-        xhr.responseType = 'arraybuffer';
-
-        xhr.onload = function () {
-            let arrayBuffer = xhr.response;
-            let length = new Int32Array(arrayBuffer, 0, 1)[0];
-            let headView = new DataView(arrayBuffer, 4,length*4*4);
-            console.log(headView);
-
-            let fileData = new Map();
-
-            for (let i = 0; i < length;i++){
-
-                let id = headView.getInt32(i*4*4,true);
-                let dataType = headView.getInt32(i*4*4+4,true);
-                let offset = headView.getInt32(i*4*4+8,true);
-                let byteLength = headView.getInt32(i*4*4+12,true);
-                console.log(id,dataType,offset,byteLength);
-                fileData.set(id, arrayBuffer.slice(offset, offset+byteLength));// new Int8Array(arrayBuffer,offset, byteLength);
-            }
-
-
-            let geometry = new THREE.BufferGeometry();
-            let vertices = new Float32Array(fileData.get(0));
-            console.log(fileData);
-            geometry.setIndex( [...new Int32Array(fileData.get(1))]);
-            geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
-
-            let material = new THREE.MeshBasicMaterial( { color: 0xff9900 } );
-            let mesh = new THREE.Mesh( geometry, material );
-            scene.add( mesh );
-
-        };
-
-        xhr.send();
+        // var helper = new THREE.CameraHelper( light.shadow.camera );
+        // scene.add( helper );
     }
 
 

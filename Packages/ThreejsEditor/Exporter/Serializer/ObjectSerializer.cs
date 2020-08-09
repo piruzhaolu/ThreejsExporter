@@ -31,9 +31,14 @@ namespace Piruzhaolu.ThreejsEditor
             Serialize(allGameObjects, objPack);
             var json = JsonUtility.ToJson(objPack);
             AssetDatabase.SaveScene(json, scene.name);
+            EditorUtility.DisplayDialog("Threejs Editor","saved", "OK");
         }
 
-       
+        [MenuItem("Tools/Clear")]
+        public static void Clear()
+        {
+            AssetDatabase.Clear();
+        }
 #endif
 
         private static void CreateObjectID(GameObject[] gameObjects)

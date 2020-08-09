@@ -20,6 +20,10 @@ namespace Piruzhaolu.ThreejsEditor
         private static readonly int MetallicGlossMap = Shader.PropertyToID("_MetallicGlossMap");
         private static readonly int Smoothness = Shader.PropertyToID("_Smoothness");
 
+        internal static void Clear()
+        {
+            _database = null;
+        }
         public static Dictionary<string, object> Database
         {
             get
@@ -141,7 +145,7 @@ namespace Piruzhaolu.ThreejsEditor
                     returnValue = SaveMaterial(material, guid);
                     break;
                 case Texture2D texture2D:
-                    returnValue = SaveTexture(texture2D, guid);
+                    returnValue = SaveTexture(FormatConvert(texture2D), guid);
                     break;
                 default:
                     return null;
@@ -160,17 +164,30 @@ namespace Piruzhaolu.ThreejsEditor
 
             var tex2d = TrySave<Tex2d>(material.GetTexture(BaseMap) as Texture2D);
             if (tex2d != null) mat.map = tex2d.id;
-            
-            tex2d = TrySave<Tex2d>(material.GetTexture(MetallicGlossMap) as Texture2D);
-            if (tex2d != null) mat.metalnessMap = tex2d.id;
+
+            var metallicGlossMapTex = material.GetTexture(MetallicGlossMap) as Texture2D;
+            if (metallicGlossMapTex != null)
+            {
+                var guid = ObjectFullID(metallicGlossMapTex);
+                if (Has(guid))
+                {
+                    tex2d = Database[guid] as Tex2d;
+                }
+                else
+                {
+                    var mTex = FormatConvert(metallicGlossMapTex, true);
+                    tex2d = SaveTexture(mTex,guid);
+                }
+                if (tex2d != null) mat.metalnessMap = tex2d.id;
+            }
 
             mat.metalness = material.GetFloat(Smoothness);
-            
-            
-            
-            
             return mat;
         }
+        
+        
+        
+        
 
         private static Tex2d SaveTexture(Texture2D texture, string assetGuid)
         {
@@ -184,13 +201,13 @@ namespace Piruzhaolu.ThreejsEditor
             var tex2d = new Tex2d {id = assetGuid, type = "tex2d"};
             var json = JsonUtility.ToJson(tex2d);
             byte[] fileBytes;
-            if (texture.format == TextureFormat.DXT1)
+            if (texture.format == TextureFormat.RGB24)
             {
-                fileBytes = DuplicateTexture(texture).EncodeToJPG();
+                fileBytes = texture.EncodeToJPG();
             }
             else
             {
-                fileBytes = DuplicateTexture(texture).EncodeToPNG();
+                fileBytes = texture.EncodeToPNG();
             }
 
             File.WriteAllText($"{AssetPath}/{assetGuid}.meta", json);
@@ -198,10 +215,35 @@ namespace Piruzhaolu.ThreejsEditor
             // Database[assetGuid] = tex2d;
             return tex2d;
         }
+
+        
+        private static Texture2D FormatConvert(Texture2D texture2D, bool channelExchange = false)
+        {
+            if (texture2D == null) return null;
+            var newTexture = DuplicateTexture(texture2D);
+            if (channelExchange)
+            {
+                ChannelExchange(newTexture);
+            }
+            return newTexture;
+        }
+        
+
+        private static void ChannelExchange(Texture2D tex2d)
+        {
+            for (var x = 0; x< tex2d.width; x++)
+            {
+                for (var y = 0; y < tex2d.height; y++)
+                {
+                    var color = tex2d.GetPixel(x, y);
+                    var newColor = new Color(color.b,color.a,color.r,color.g);
+                    tex2d.SetPixel(x,y, newColor);
+                }
+            }
+        }
         
         private static Texture2D DuplicateTexture(Texture2D source)
         {
-            Debug.Log($"{source.name}==={source.alphaIsTransparency}==={source.format}");
             RenderTexture renderTex = RenderTexture.GetTemporary(
                 source.width,
                 source.height,
@@ -212,7 +254,17 @@ namespace Piruzhaolu.ThreejsEditor
             Graphics.Blit(source, renderTex);
             RenderTexture previous = RenderTexture.active;
             RenderTexture.active = renderTex;
-            Texture2D readableText = new Texture2D(source.width, source.height);
+            
+            Texture2D readableText;
+            if (source.format == TextureFormat.DXT1)
+            {
+                readableText = new Texture2D(source.width, source.height, TextureFormat.RGB24, false);
+            }
+            else
+            {
+                readableText = new Texture2D(source.width, source.height);
+            }
+               
             readableText.ReadPixels(new Rect(0, 0, renderTex.width, renderTex.height), 0, 0);
             readableText.Apply();
             RenderTexture.active = previous;
