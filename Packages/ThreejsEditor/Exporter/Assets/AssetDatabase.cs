@@ -19,6 +19,7 @@ namespace Piruzhaolu.ThreejsEditor
         private static readonly int BaseMap = Shader.PropertyToID("_BaseMap");
         private static readonly int MetallicGlossMap = Shader.PropertyToID("_MetallicGlossMap");
         private static readonly int Smoothness = Shader.PropertyToID("_Smoothness");
+        private static readonly int BumpMap = Shader.PropertyToID("_BumpMap");
 
         internal static void Clear()
         {
@@ -181,6 +182,10 @@ namespace Piruzhaolu.ThreejsEditor
                 if (tex2d != null) mat.metalnessMap = tex2d.id;
             }
 
+            tex2d = TrySave<Tex2d>(material.GetTexture(BumpMap) as Texture2D);
+            if (tex2d != null) mat.normalMap = tex2d.id;
+            
+
             mat.metalness = material.GetFloat(Smoothness);
             return mat;
         }
@@ -217,7 +222,7 @@ namespace Piruzhaolu.ThreejsEditor
         }
 
         
-        private static Texture2D FormatConvert(Texture2D texture2D, bool channelExchange = false)
+        public static Texture2D FormatConvert(Texture2D texture2D, bool channelExchange = false)
         {
             if (texture2D == null) return null;
             var newTexture = DuplicateTexture(texture2D);
@@ -249,7 +254,7 @@ namespace Piruzhaolu.ThreejsEditor
                 source.height,
                 0,
                 RenderTextureFormat.Default,
-                RenderTextureReadWrite.Linear);
+                RenderTextureReadWrite.Default);
 
             Graphics.Blit(source, renderTex);
             RenderTexture previous = RenderTexture.active;
@@ -262,7 +267,7 @@ namespace Piruzhaolu.ThreejsEditor
             }
             else
             {
-                readableText = new Texture2D(source.width, source.height);
+                readableText = new Texture2D(source.width, source.height,TextureFormat.RGBA32,false);
             }
                
             readableText.ReadPixels(new Rect(0, 0, renderTex.width, renderTex.height), 0, 0);

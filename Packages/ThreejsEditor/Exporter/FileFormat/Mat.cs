@@ -11,6 +11,7 @@ namespace Piruzhaolu.ThreejsEditor
         public float[] color;
         public string map;
         public string metalnessMap;
+        public string normalMap;
         public float metalness;
     }
 }

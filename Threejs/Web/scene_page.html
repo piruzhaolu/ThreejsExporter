@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Scene Page </title>
+</head>
+<body>
+<script type="module">
+    import * as THREE from "../build/three.module.js";
+    import { OrbitControls } from './OrbitControls.js';
+    import {Scene} from "../Loader/Scene.js";
+
+    var renderer,camera,scene;
+    var geometry;
+    init();
+    animate();
+
+    function init(){
+        renderer = new THREE.WebGLRenderer();
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFShadowMap;
+        renderer.setSize( window.innerWidth, window.innerHeight );
+        document.body.appendChild( renderer.domElement );
+
+        window.addEventListener( 'resize', onWindowResize, false );
+
+        scene = new Scene();
+        scene.load("../assets/SampleScene.scene", function (_) {
+            camera = scene.getCamera();
+            let controls = new OrbitControls( camera, renderer.domElement );
+            //controls.maxPolarAngle = Math.PI * 0.5;
+            controls.minDistance = 0;
+            controls.maxDistance = 5000;
+        });
+        scene.add(new THREE.AmbientLight( 0x666666 ) );
+    }
+
+
+    function onWindowResize() {
+        if (camera == undefined) return;
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+
+        renderer.setSize( window.innerWidth, window.innerHeight );
+    }
+
+
+    function animate(){
+
+        requestAnimationFrame( animate );
+        if (camera == undefined) return;
+        //console.log(camera.position);
+        renderer.render( scene, camera );
+    }
+
+</script>
+</body>
+</html>

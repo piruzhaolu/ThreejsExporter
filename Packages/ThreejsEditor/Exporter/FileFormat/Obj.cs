@@ -10,10 +10,12 @@ namespace Piruzhaolu.ThreejsEditor
         public string type;
         public float[] position;
         public float[] quaternion;
+        public float[] scale;
         public float[] matrix;
         public string geometry;
         public string material;
         public string[] materials;
         public string parent;
+        public List<object> datas;
     }
 }

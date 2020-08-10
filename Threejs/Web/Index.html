@@ -11,6 +11,7 @@
     import { OrbitControls } from './OrbitControls.js';
     import {BundleLoader} from "../Loader/BundleLoader.js";
     import {ObjectLoader} from "../Loader/ObjectLoader.js";
+    import {Scene} from "../Loader/Scene.js";
 
     var renderer,camera,scene;
     var geometry;
@@ -24,29 +25,16 @@
         renderer.setSize( window.innerWidth, window.innerHeight );
         document.body.appendChild( renderer.domElement );
 
-        camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 200 );
-        camera.position.set( 0, 0, -10 );
-        camera.lookAt( 0, 0, 0 );
+        // camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 200 );
+        // camera.position.set( 0, 0, -10 );
+        // camera.lookAt( 0, 0, 0 );
 
-        scene = new THREE.Scene();
-        scene.add( new THREE.AmbientLight( 0x666666 ) );
+       //  scene = new THREE.Scene();
+       // scene.add( );
 
-        let light = new THREE.DirectionalLight( 0xFFFFFF, 1.0 );
-        light.position.set( -1, 1.75, 1 );
-        light.castShadow = true;
 
-        light.shadow.mapSize.width = 1024;  // default
-        light.shadow.mapSize.height = 1024; // default
-        light.shadow.camera.near = 0.01;    // default
-        light.shadow.camera.far = 100;     // default
 
-        var d = 20;
-        light.shadow.camera.left = - d;
-        light.shadow.camera.right = d;
-        light.shadow.camera.top = d;
-        light.shadow.camera.bottom = - d;
 
-        scene.add(light);
 
 
         // var geometry = new THREE.SphereGeometry( 0.5, 32, 32 );
@@ -69,17 +57,40 @@
 
         window.addEventListener( 'resize', onWindowResize, false );
 
-        var controls = new OrbitControls( camera, renderer.domElement );
-        //controls.maxPolarAngle = Math.PI * 0.5;
-        controls.minDistance = 0;
-        controls.maxDistance = 5000;
 
-        var loader = new ObjectLoader();
-        loader.setParent(scene);
-        loader.load("../assets/SampleScene.scene", function (_) {
 
+        // var loader = new ObjectLoader();
+        // loader.setParent(scene);
+        // loader.load("../assets/SampleScene.scene", function (_) {
+        //
+        // });
+
+
+        scene = new Scene();
+        scene.load("../assets/SampleScene.scene", function (_) {
+            camera = scene.getCamera();
+            let controls = new OrbitControls( camera, renderer.domElement );
+            //controls.maxPolarAngle = Math.PI * 0.5;
+            controls.minDistance = 0;
+            controls.maxDistance = 5000;
         });
+        scene.add(new THREE.AmbientLight( 0x666666 ) );
 
+       //  let light = new THREE.DirectionalLight( 0xFFFFFF, 1.0 );
+       //  light.position.set( -1, 1.75, 1 );
+       //  light.castShadow = true;
+       //
+       //  light.shadow.mapSize.width = 1024;  // default
+       //  light.shadow.mapSize.height = 1024; // default
+       //  light.shadow.camera.near = 0.01;    // default
+       //  light.shadow.camera.far = 100;     // default
+       //
+       //  var d = 20;
+       //  light.shadow.camera.left = - d;
+       //  light.shadow.camera.right = d;
+       //  light.shadow.camera.top = d;
+       //  light.shadow.camera.bottom = - d;
+       // // scene.add(light);
 
         // var helper = new THREE.CameraHelper( light.shadow.camera );
         // scene.add( helper );
@@ -89,6 +100,7 @@
 
 
     function onWindowResize() {
+        if (camera == undefined) return;
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
 
@@ -97,7 +109,9 @@
     }
 
     function animate(){
+
         requestAnimationFrame( animate );
+        if (camera == undefined) return;
         //console.log(camera.position);
         renderer.render( scene, camera );
     }

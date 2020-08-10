@@ -29,7 +29,7 @@ namespace Piruzhaolu.ThreejsEditor
             var allGameObjects = scene.GetRootGameObjects();
             CreateObjectID(allGameObjects);
             Serialize(allGameObjects, objPack);
-            var json = JsonUtility.ToJson(objPack);
+            var json = JsonConvert.SerializeObject(objPack);// JsonUtility.ToJson(objPack);
             AssetDatabase.SaveScene(json, scene.name);
             EditorUtility.DisplayDialog("Threejs Editor","saved", "OK");
         }
@@ -39,6 +39,25 @@ namespace Piruzhaolu.ThreejsEditor
         {
             AssetDatabase.Clear();
         }
+
+        [MenuItem("Tools/Normor")]
+        public static void JsonTest()
+        {
+            var path = UnityEditor.AssetDatabase.GUIDToAssetPath("b993ae890161b184188e417d77e0e1a3");
+            var tex = UnityEditor.AssetDatabase.LoadAssetAtPath<Texture2D>(path);
+            // var data = tex.GetRawTextureData();
+            // var newTex = AssetDatabase.FormatConvert(tex);
+            // var png = newTex.EncodeToPNG();
+            // File.WriteAllBytes("Assets/a.png",png);
+            
+            byte[] pix = tex.GetRawTextureData();
+            Texture2D readableText = new Texture2D(tex.width, tex.height, TextureFormat.RGBA32, false);
+            readableText.LoadRawTextureData(pix);
+            readableText.Apply();
+            var png = readableText.EncodeToPNG();
+            File.WriteAllBytes("Assets/a.png",png);
+        }
+        
 #endif
 
         private static void CreateObjectID(GameObject[] gameObjects)
@@ -90,6 +109,8 @@ namespace Piruzhaolu.ThreejsEditor
             obj.position = new []{pos.x,pos.y,pos.z};
             var q = gameObject.transform.localRotation;
             obj.quaternion = new[] {q.x, q.y, q.z, q.w};
+            var s = gameObject.transform.localScale;
+            obj.scale = new[] {s.x, s.y, s.z};
             obj.parent = parent;
             
             //var m = Matrix4x4.identity;
@@ -131,6 +152,8 @@ namespace Piruzhaolu.ThreejsEditor
                     }
                 }
             }
+
+            SaveData(gameObject, obj);
             objPack.objects.Add(obj);
 
             var childCount = gameObject.transform.childCount;
@@ -144,6 +167,24 @@ namespace Piruzhaolu.ThreejsEditor
             }
         }
         
+
+        private static void SaveData(GameObject gameObject, Obj obj)
+        {
+            if (gameObject.TryGetComponent<Light>(out var light))
+            {
+                if (obj.datas == null) obj.datas= new List<object>();
+                if (light.type == LightType.Directional)
+                {
+                    obj.datas.Add(new ObjDataDirectionalLight(light));
+                }
+            }
+
+            if (gameObject.TryGetComponent<Camera>(out var camera))
+            {
+                if (obj.datas == null) obj.datas= new List<object>();
+                obj.datas.Add(new ObjDataCamera(camera));
+            }
+        }
         
 
         private static float[] MatrixToArray(Matrix4x4 m)
