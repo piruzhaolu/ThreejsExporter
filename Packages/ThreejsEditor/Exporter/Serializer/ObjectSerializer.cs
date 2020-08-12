@@ -64,6 +64,7 @@ namespace Piruzhaolu.ThreejsEditor
         {
             foreach (var o in gameObjects)
             {
+                if (o.activeSelf == false) continue;
                 CreateObjectID(o);
             }
         }
@@ -91,6 +92,7 @@ namespace Piruzhaolu.ThreejsEditor
         {
             foreach (var go in gameObjects)
             {
+                if (go.activeSelf == false) continue;
                 Serialize(go, objPack);
             }
         }

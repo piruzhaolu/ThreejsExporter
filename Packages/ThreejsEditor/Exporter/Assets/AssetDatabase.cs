@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -249,6 +250,15 @@ namespace Piruzhaolu.ThreejsEditor
         
         private static Texture2D DuplicateTexture(Texture2D source)
         {
+            var ti = AssetImporter.GetAtPath(UnityEditor.AssetDatabase.GetAssetPath(source)) as TextureImporter;
+            var isNormalMap = false;
+            if (ti != null && ti.textureType == TextureImporterType.NormalMap)
+            {
+                ti.textureType = TextureImporterType.Default;
+                ti.SaveAndReimport();
+                isNormalMap = true;
+            }
+            
             RenderTexture renderTex = RenderTexture.GetTemporary(
                 source.width,
                 source.height,
@@ -274,6 +284,11 @@ namespace Piruzhaolu.ThreejsEditor
             readableText.Apply();
             RenderTexture.active = previous;
             RenderTexture.ReleaseTemporary(renderTex);
+            if (isNormalMap)
+            {
+                ti.textureType = TextureImporterType.NormalMap;
+                ti.SaveAndReimport();
+            }
             return readableText;
         }
         
@@ -286,6 +301,11 @@ namespace Piruzhaolu.ThreejsEditor
             geo.indexs = $"{id}#{binBindle.Add(BytesUtility.ToBytes(mesh.triangles))}";
             geo.attr_normal = $"{id}#{binBindle.Add(BytesUtility.ToBytes(mesh.normals))}";
             geo.attr_uv  = $"{id}#{binBindle.Add(BytesUtility.ToBytes(mesh.uv))}";
+            if (mesh.tangents != null && mesh.tangents.Length > 0)
+            {
+                geo.attr_tangent = $"{id}#{binBindle.Add(BytesUtility.ToBytes(mesh.tangents))}";
+            }
+            
              
             var subList = new List<Geometrie.Sub>();
             for (var i = 0; i < mesh.subMeshCount; i++)

@@ -53,7 +53,10 @@ export class ObjectLoader extends THREE.FileLoader {
                                 geometry.addGroup(sub.start, sub.count, sub.materialIndex);
                             }
                         }
+
+
                         mThis._geometrieMap.set(geo.id, geometry);
+
                         mThis._setGeometry(geometry,geo);
                     }
 
@@ -134,8 +137,7 @@ export class ObjectLoader extends THREE.FileLoader {
         //camera.lookAt( 0, 0, 0 );
         camera.quaternion.set(...obj.quaternion);
        // camera.scale.set(...obj.scale);
-        camera.updateProjectionMatrix();
-        console.log(camera);
+       //camera.updateProjectionMatrix();
         this._camera = camera;
     }
 
@@ -177,13 +179,16 @@ export class ObjectLoader extends THREE.FileLoader {
         if (typeof mat.map == 'string' && mat.map != ""){
             m.map = new THREE.TextureLoader().load( this._routing(mat.map));//TODO:不知道内部是否重复加载
         }
-
         if (typeof mat.metalnessMap == 'string' && mat.metalnessMap != ""){
             m.metalnessMap = m.roughnessMap = new THREE.TextureLoader().load( this._routing(mat.metalnessMap));
         }
 
         if (typeof mat.normalMap == 'string' && mat.normalMap != ""){
-            m.normalMap = new THREE.TextureLoader().load( this._routing(mat.normalMap));
+            var mThis = this;
+            setTimeout(function () {
+                m.normalMap = new THREE.TextureLoader().load( mThis._routing(mat.normalMap));
+                m.needsUpdate = true;
+            },2000);
         }
 
         //m.metalness = 1;
@@ -196,27 +201,37 @@ export class ObjectLoader extends THREE.FileLoader {
     }
 
     _setGeometry(geometry, geo){
-        this._loadBundle(geo.attr_position, function (arrayBuffer) {
-            let vertices = new Float32Array(arrayBuffer);
-            geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-            geometry.computeBoundingSphere();
-        });
         this._loadBundle(geo.indexs, function (arrayBuffer) {
             geometry.setIndex([...new Int32Array(arrayBuffer)]);
+            console.log("index:", arrayBuffer);
+            geometry.computeBoundingSphere();
+        });
+        this._loadBundle(geo.attr_position, function (arrayBuffer) {
+            let vertices = new Float32Array(arrayBuffer);
+            console.log("position:", vertices);
+            geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
             geometry.computeBoundingSphere();
         });
         this._loadBundle(geo.attr_normal, function (arrayBuffer) {
             let normal = new Float32Array(arrayBuffer);
             geometry.setAttribute('normal', new THREE.BufferAttribute(normal, 3));
+            console.log("normal:", normal);
         });
         this._loadBundle(geo.attr_uv, function (arrayBuffer) {
             let uv = new Float32Array(arrayBuffer);
             geometry.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+            console.log("uv:", uv);
+
         });
 
+        // this._loadBundle(geo.attr_tangent, function (arrayBuffer) {
+        //     let tangent = new Float32Array(arrayBuffer);
+        //     geometry.setAttribute('tangent', new THREE.BufferAttribute(tangent, 4));
+        // });
     }
 
     _loadBundle(path, callbackFn){
+        if (path == undefined || path == "") return;
         let array = path.split("#");
         let path2 = array[0];
         let index = 0;

@@ -18,11 +18,12 @@
     function init(){
         renderer = new THREE.WebGLRenderer();
         renderer.shadowMap.enabled = true;
-        renderer.shadowMap.type = THREE.PCFShadowMap;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         renderer.setSize( window.innerWidth, window.innerHeight );
         document.body.appendChild( renderer.domElement );
 
         window.addEventListener( 'resize', onWindowResize, false );
+
 
         scene = new Scene();
         scene.load("../assets/SampleScene.scene", function (_) {
@@ -33,6 +34,12 @@
             controls.maxDistance = 5000;
         });
         scene.add(new THREE.AmbientLight( 0x666666 ) );
+
+        var geometry = new THREE.BoxBufferGeometry( 5, 5, 5 );
+        var material = new THREE.MeshStandardMaterial( {color: 0xFFFFFF} );
+        material.normalMap =  new THREE.TextureLoader().load( "../assets/normal_mapping_normal_map.png");
+        var cube = new THREE.Mesh( geometry, material );
+        scene.add( cube );
     }
 
 

@@ -43,7 +43,7 @@ export class BundleLoader extends THREE.FileLoader {
                 mThis._isDone = true;
             },
             function (xhr) {
-                console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+                //console.log((xhr.loaded / xhr.total * 100) + '% loaded');
             },
 
             function (err) {
