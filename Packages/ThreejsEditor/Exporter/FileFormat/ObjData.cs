@@ -1,5 +1,7 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 
 namespace Piruzhaolu.ThreejsEditor
 {
@@ -20,10 +22,10 @@ namespace Piruzhaolu.ThreejsEditor
         public float shadowFar = 100;
         public int shadowMapSizeW = 1024;
         public int shadowMapSizeH = 1024;
-        public int shadowCameraLeft = -20;
-        public int shadowCameraRight = 20;
-        public int shadowCameraTop = 20;
-        public int shadowCameraBottom = -20;
+        public int shadowCameraLeft = -100;
+        public int shadowCameraRight = 100;
+        public int shadowCameraTop = 100;
+        public int shadowCameraBottom = -100;
 
         public ObjDataDirectionalLight(Light light)
         {
@@ -31,9 +33,13 @@ namespace Piruzhaolu.ThreejsEditor
             castShadow = light.shadows != LightShadows.None;
             intensity = light.intensity;
             color = ObjPack.Color(light.color);
-            var v3 = light.transform.rotation * Vector3.back;
+            var v3 = light.transform.rotation * Vector3.back*2;
             position = ObjPack.Vector3(v3);
             shadowNear = light.shadowNearPlane;
+            if (GraphicsSettings.currentRenderPipeline is UniversalRenderPipelineAsset asset)
+            {
+                shadowMapSizeW = shadowMapSizeH = asset.mainLightShadowmapResolution;
+            }
 
         }
     }

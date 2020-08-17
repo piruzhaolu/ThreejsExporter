@@ -3,6 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <title>Scene Page </title>
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <style>
+        body {
+            background-color: #fff;
+            color: #000;
+        }
+    </style>
 </head>
 <body>
 <script type="module">
@@ -16,9 +24,10 @@
     animate();
 
     function init(){
-        renderer = new THREE.WebGLRenderer();
+        renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.shadowMap.enabled = true;
         renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.debug.checkShaderErrors = true;
         renderer.setSize( window.innerWidth, window.innerHeight );
         document.body.appendChild( renderer.domElement );
 
@@ -26,7 +35,8 @@
 
 
         scene = new Scene();
-        scene.load("../assets/SampleScene.scene", function (_) {
+        scene.background = new THREE.Color(0.19,0.3,0.47);
+        scene.load("../assets/Demo.scene", function (_) {
             camera = scene.getCamera();
             let controls = new OrbitControls( camera, renderer.domElement );
             //controls.maxPolarAngle = Math.PI * 0.5;
@@ -35,11 +45,11 @@
         });
         scene.add(new THREE.AmbientLight( 0x666666 ) );
 
-        var geometry = new THREE.BoxBufferGeometry( 5, 5, 5 );
-        var material = new THREE.MeshStandardMaterial( {color: 0xFFFFFF} );
-        material.normalMap =  new THREE.TextureLoader().load( "../assets/normal_mapping_normal_map.png");
-        var cube = new THREE.Mesh( geometry, material );
-        scene.add( cube );
+        // var geometry = new THREE.BoxBufferGeometry( 5, 5, 5 );
+        // var material = new THREE.MeshStandardMaterial( {color: 0xFFFFFF} );
+        // material.normalMap =  new THREE.TextureLoader().load( "../assets/normal_mapping_normal_map.png");
+        // var cube = new THREE.Mesh( geometry, material );
+        // scene.add( cube );
     }
 
 
@@ -57,6 +67,7 @@
         requestAnimationFrame( animate );
         if (camera == undefined) return;
         //console.log(camera.position);
+        //renderer.clear();
         renderer.render( scene, camera );
     }
 

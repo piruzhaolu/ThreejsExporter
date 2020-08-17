@@ -118,13 +118,14 @@ export class ObjectLoader extends THREE.FileLoader {
 
         light.shadow.mapSize.width = lightData.shadowMapSizeW;
         light.shadow.mapSize.height = lightData.shadowMapSizeH;
-        light.shadow.camera.near = lightData.shadowNear;    // default
-        light.shadow.camera.far = lightData.shadowFar;     // default
+        light.shadow.camera.near = -200;//lightData.shadowNear;    // default
+        light.shadow.camera.far = 200;//lightData.shadowFar;     // default
 
-        light.shadow.camera.left = lightData.shadowCameraLeft;
-        light.shadow.camera.right =  lightData.shadowCameraRight;
-        light.shadow.camera.top =  lightData.shadowCameraTop;
-        light.shadow.camera.bottom = lightData.shadowCameraBottom;
+        light.shadow.camera.left = -200;//lightData.shadowCameraLeft;
+        light.shadow.camera.right = 200;//lightData.shadowCameraRight;
+        light.shadow.camera.top =  200;//lightData.shadowCameraTop;
+        light.shadow.camera.bottom = -200;//lightData.shadowCameraBottom;
+        window.light = light;
         if (this._parent != undefined){
             this._parent.add(light);
         }
@@ -132,8 +133,8 @@ export class ObjectLoader extends THREE.FileLoader {
 
     _setCamera(cameraData, obj) {
         let camera = new THREE.PerspectiveCamera( cameraData.fov, window.innerWidth / window.innerHeight, cameraData.near, cameraData.far);
-        //camera.position.set(...obj.position);
-        camera.position.set(obj.position[0],-obj.position[1],obj.position[2]);
+        camera.position.set(...obj.position);
+        // camera.position.set(obj.position[0],-obj.position[1],obj.position[2]);
         //camera.lookAt( 0, 0, 0 );
         camera.quaternion.set(...obj.quaternion);
        // camera.scale.set(...obj.scale);
@@ -184,11 +185,8 @@ export class ObjectLoader extends THREE.FileLoader {
         }
 
         if (typeof mat.normalMap == 'string' && mat.normalMap != ""){
-            var mThis = this;
-            setTimeout(function () {
-                m.normalMap = new THREE.TextureLoader().load( mThis._routing(mat.normalMap));
-                m.needsUpdate = true;
-            },2000);
+            m.normalMap = new THREE.TextureLoader().load( this._routing(mat.normalMap));
+           // m.needsUpdate = true;
         }
 
         //m.metalness = 1;
@@ -203,24 +201,24 @@ export class ObjectLoader extends THREE.FileLoader {
     _setGeometry(geometry, geo){
         this._loadBundle(geo.indexs, function (arrayBuffer) {
             geometry.setIndex([...new Int32Array(arrayBuffer)]);
-            console.log("index:", arrayBuffer);
+            //console.log("index:", arrayBuffer);
             geometry.computeBoundingSphere();
         });
         this._loadBundle(geo.attr_position, function (arrayBuffer) {
             let vertices = new Float32Array(arrayBuffer);
-            console.log("position:", vertices);
+           // console.log("position:", vertices);
             geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
             geometry.computeBoundingSphere();
         });
         this._loadBundle(geo.attr_normal, function (arrayBuffer) {
             let normal = new Float32Array(arrayBuffer);
             geometry.setAttribute('normal', new THREE.BufferAttribute(normal, 3));
-            console.log("normal:", normal);
+           // console.log("normal:", normal);
         });
         this._loadBundle(geo.attr_uv, function (arrayBuffer) {
             let uv = new Float32Array(arrayBuffer);
             geometry.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
-            console.log("uv:", uv);
+           // console.log("uv:", uv);
 
         });
 

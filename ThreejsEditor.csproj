@@ -76,6 +76,12 @@
      <Compile Include="D:\github\ThreejsExporter\Packages\ThreejsEditor\Exporter\Serializer\ObjectSerializer.cs" />
      <None Include="D:\github\ThreejsExporter\Packages\ThreejsEditor\Plugins\net45\Newtonsoft.Json.xml" />
      <None Include="D:\github\ThreejsExporter\Packages\ThreejsEditor\ThreejsEditor.asmdef" />
+ <Reference Include="Unity.RenderPipelines.Universal.Editor">
+ <HintPath>D:/github/ThreejsExporter/Library/ScriptAssemblies/Unity.RenderPipelines.Universal.Editor.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.RenderPipelines.Universal.Runtime">
+ <HintPath>D:/github/ThreejsExporter/Library/ScriptAssemblies/Unity.RenderPipelines.Universal.Runtime.dll</HintPath>
+ </Reference>
  <Reference Include="UnityEditor.UI">
  <HintPath>D:/github/ThreejsExporter/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
  </Reference>

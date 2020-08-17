@@ -43,19 +43,14 @@ namespace Piruzhaolu.ThreejsEditor
         [MenuItem("Tools/Normor")]
         public static void JsonTest()
         {
-            var path = UnityEditor.AssetDatabase.GUIDToAssetPath("b993ae890161b184188e417d77e0e1a3");
-            var tex = UnityEditor.AssetDatabase.LoadAssetAtPath<Texture2D>(path);
-            // var data = tex.GetRawTextureData();
-            // var newTex = AssetDatabase.FormatConvert(tex);
-            // var png = newTex.EncodeToPNG();
-            // File.WriteAllBytes("Assets/a.png",png);
-            
-            byte[] pix = tex.GetRawTextureData();
-            Texture2D readableText = new Texture2D(tex.width, tex.height, TextureFormat.RGBA32, false);
-            readableText.LoadRawTextureData(pix);
-            readableText.Apply();
-            var png = readableText.EncodeToPNG();
-            File.WriteAllBytes("Assets/a.png",png);
+            Application.OpenURL("http://192.168.2.115:8080/Web/scene_page.html");
+            // var skybox = RenderSettings.skybox;
+            // var names = skybox.GetTexturePropertyNames();
+            // Debug.Log(skybox.name);
+            // foreach (var n in names)
+            // {
+            //     Debug.Log(n);
+            // }
         }
         
 #endif
