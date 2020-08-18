@@ -18,7 +18,7 @@ namespace Piruzhaolu.ThreejsEditor
         public bool castShadow;
         public float[] color;
         public float intensity;
-        public float shadowNear ;
+        public float shadowNear = -100;
         public float shadowFar = 100;
         public int shadowMapSizeW = 1024;
         public int shadowMapSizeH = 1024;
@@ -35,10 +35,20 @@ namespace Piruzhaolu.ThreejsEditor
             color = ObjPack.Color(light.color);
             var v3 = light.transform.rotation * Vector3.back*2;
             position = ObjPack.Vector3(v3);
-            shadowNear = light.shadowNearPlane;
-            if (GraphicsSettings.currentRenderPipeline is UniversalRenderPipelineAsset asset)
+
+
+            if (light.transform.TryGetComponent<ShadowSettings>(out var settings))
             {
-                shadowMapSizeW = shadowMapSizeH = asset.mainLightShadowmapResolution;
+                shadowNear = settings.shadowNear;
+                shadowFar = settings.shadowFar;
+                shadowMapSizeW = settings.shadowMapSizeW;
+                shadowMapSizeH = settings.shadowMapSizeH;
+                
+                shadowCameraLeft = settings.shadowCameraLeft;
+                shadowCameraRight = settings.shadowCameraRight;
+                shadowCameraTop = settings.shadowCameraTop;
+                shadowCameraBottom = settings.shadowCameraBottom;
+                
             }
 
         }

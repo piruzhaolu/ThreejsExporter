@@ -118,13 +118,13 @@ export class ObjectLoader extends THREE.FileLoader {
 
         light.shadow.mapSize.width = lightData.shadowMapSizeW;
         light.shadow.mapSize.height = lightData.shadowMapSizeH;
-        light.shadow.camera.near = -200;//lightData.shadowNear;    // default
-        light.shadow.camera.far = 200;//lightData.shadowFar;     // default
+        light.shadow.camera.near = lightData.shadowNear;    // default
+        light.shadow.camera.far = lightData.shadowFar;     // default
 
-        light.shadow.camera.left = -200;//lightData.shadowCameraLeft;
-        light.shadow.camera.right = 200;//lightData.shadowCameraRight;
-        light.shadow.camera.top =  200;//lightData.shadowCameraTop;
-        light.shadow.camera.bottom = -200;//lightData.shadowCameraBottom;
+        light.shadow.camera.left = lightData.shadowCameraLeft;
+        light.shadow.camera.right = lightData.shadowCameraRight;
+        light.shadow.camera.top =  lightData.shadowCameraTop;
+        light.shadow.camera.bottom = lightData.shadowCameraBottom;
         window.light = light;
         if (this._parent != undefined){
             this._parent.add(light);

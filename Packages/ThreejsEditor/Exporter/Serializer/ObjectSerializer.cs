@@ -17,13 +17,9 @@ namespace Piruzhaolu.ThreejsEditor
     public class ObjectSerializer
     {
 #if UNITY_EDITOR
-        [MenuItem("Tools/Run")]
-        public static void Run()
+        [MenuItem("Threejs/SaveToThreejs")]
+        public static void SaveToThreejs()
         {
-            // var json = Serialize(GameObject.Find("Cylinder"));
-            
-            //AssetDatabase.Save(GameObject.Find("Cylinder").GetComponent<MeshFilter>().sharedMesh);
-           
             var objPack = new ObjPack();
             var scene = SceneManager.GetActiveScene();
             var allGameObjects = scene.GetRootGameObjects();
@@ -33,25 +29,20 @@ namespace Piruzhaolu.ThreejsEditor
             AssetDatabase.SaveScene(json, scene.name);
             EditorUtility.DisplayDialog("Threejs Editor","saved", "OK");
         }
+        
+        [MenuItem("Threejs/Run")]
+        public static void Run()
+        {
+            Application.OpenURL("http://192.168.2.115:8080/Web/scene_page.html");
+        }
 
-        [MenuItem("Tools/Clear")]
+        [MenuItem("Threejs/Clear")]
         public static void Clear()
         {
             AssetDatabase.Clear();
         }
 
-        [MenuItem("Tools/Normor")]
-        public static void JsonTest()
-        {
-            Application.OpenURL("http://192.168.2.115:8080/Web/scene_page.html");
-            // var skybox = RenderSettings.skybox;
-            // var names = skybox.GetTexturePropertyNames();
-            // Debug.Log(skybox.name);
-            // foreach (var n in names)
-            // {
-            //     Debug.Log(n);
-            // }
-        }
+        
         
 #endif
 

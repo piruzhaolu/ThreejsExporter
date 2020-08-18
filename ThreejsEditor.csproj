@@ -64,6 +64,8 @@
      <Compile Include="D:\github\ThreejsExporter\Packages\ThreejsEditor\Exporter\BinBundle.cs" />
      <Compile Include="D:\github\ThreejsExporter\Packages\ThreejsEditor\Exporter\BytesUtility.cs" />
      <Compile Include="D:\github\ThreejsExporter\Packages\ThreejsEditor\Exporter\Components\ObjectID.cs" />
+     <Compile Include="D:\github\ThreejsExporter\Packages\ThreejsEditor\Exporter\Components\ShadowSettings.cs" />
+     <Compile Include="D:\github\ThreejsExporter\Packages\ThreejsEditor\Exporter\EditorTools\EditorMenu.cs" />
      <Compile Include="D:\github\ThreejsExporter\Packages\ThreejsEditor\Exporter\FileFormat\Geometrie.cs" />
      <Compile Include="D:\github\ThreejsExporter\Packages\ThreejsEditor\Exporter\FileFormat\Mat.cs" />
      <Compile Include="D:\github\ThreejsExporter\Packages\ThreejsEditor\Exporter\FileFormat\Metadata.cs" />
