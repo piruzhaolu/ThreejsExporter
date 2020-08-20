@@ -4,6 +4,10 @@
     {
         public const string DirectionalLight = "directionalLight";
         public const string PerspectiveCamera = "perspectiveCamera";
+        
+        
+        public const string HemisphereLight = "hemisphereLight";
+        public const string AmbientLight = "ambientLight";
 
     }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
-
+using UnityEngine.Rendering;
 #if UNITY_EDITOR
 using System.IO;
 using UnityEditor;
@@ -24,6 +24,7 @@ namespace Piruzhaolu.ThreejsEditor
             var scene = SceneManager.GetActiveScene();
             var allGameObjects = scene.GetRootGameObjects();
             CreateObjectID(allGameObjects);
+            SerializeSceneData(scene, objPack);
             Serialize(allGameObjects, objPack);
             var json = JsonConvert.SerializeObject(objPack);// JsonUtility.ToJson(objPack);
             AssetDatabase.SaveScene(json, scene.name);
@@ -71,6 +72,28 @@ namespace Piruzhaolu.ThreejsEditor
                 }
             }
             
+        }
+        
+        
+        //scene 全局数据
+        private static void SerializeSceneData(Scene scene, ObjPack objPack)
+        {
+            if (RenderSettings.ambientMode == AmbientMode.Trilight)
+            {
+                var d = new ObjDataHemisphereLight
+                {
+                    skyColor = ObjPack.Color(RenderSettings.ambientSkyColor),
+                    groundColor = ObjPack.Color(RenderSettings.ambientGroundColor),
+                };
+                objPack.sceneDatas.Add(d);
+            }else if (RenderSettings.ambientMode == AmbientMode.Flat)
+            {
+                var d = new ObjDataAmbientLight()
+                {
+                    color = ObjPack.Color(RenderSettings.ambientLight)
+                };
+                objPack.sceneDatas.Add(d);
+            }
         }
         
 
@@ -142,6 +165,7 @@ namespace Piruzhaolu.ThreejsEditor
             }
 
             SaveData(gameObject, obj);
+            
             objPack.objects.Add(obj);
 
             var childCount = gameObject.transform.childCount;
@@ -154,7 +178,8 @@ namespace Piruzhaolu.ThreejsEditor
                 }
             }
         }
-        
+
+       
 
         private static void SaveData(GameObject gameObject, Obj obj)
         {

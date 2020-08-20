@@ -82,6 +82,23 @@ export class ObjectLoader extends THREE.FileLoader {
                         mThis._setDatas(obj.datas, obj);
                     }
 
+                    let sceneDatas = objAsJson.sceneDatas;
+                    for (let obj of sceneDatas) {
+                        if (obj.type == "ambientLight"){
+                            let light = new THREE.AmbientLight(
+                                new THREE.Color( ...obj.color )
+                            );
+                            mThis._parent.add(light);
+                        } else if (obj.type == "hemisphereLight"){
+                            let light = new THREE.HemisphereLight(
+                                new THREE.Color(...obj.skyColor),
+                                new THREE.Color(...obj.groundColor),
+                                1
+                            );
+                            mThis._parent.add(light);
+                        }
+                    }
+
                 }
                 onLoad();
             },
@@ -125,7 +142,6 @@ export class ObjectLoader extends THREE.FileLoader {
         light.shadow.camera.right = lightData.shadowCameraRight;
         light.shadow.camera.top =  lightData.shadowCameraTop;
         light.shadow.camera.bottom = lightData.shadowCameraBottom;
-        window.light = light;
         if (this._parent != undefined){
             this._parent.add(light);
         }

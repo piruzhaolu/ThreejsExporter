@@ -48,9 +48,7 @@ namespace Piruzhaolu.ThreejsEditor
                 shadowCameraRight = settings.shadowCameraRight;
                 shadowCameraTop = settings.shadowCameraTop;
                 shadowCameraBottom = settings.shadowCameraBottom;
-                
             }
-
         }
     }
 
@@ -70,6 +68,29 @@ namespace Piruzhaolu.ThreejsEditor
             near = camera.nearClipPlane;
             far = camera.farClipPlane;
         }
+    }
+
+    [Serializable]
+    public class ObjDataAmbientLight : ObjData
+    {
+        public ObjDataAmbientLight()
+        {
+            type = TypeConst.AmbientLight;
+        }
+        
+        public float[] color;
+    }
+
+    [Serializable]
+    public class ObjDataHemisphereLight : ObjData
+    {
+        public ObjDataHemisphereLight()
+        {
+            type = TypeConst.HemisphereLight;
+        }
+        
+        public float[] skyColor;
+        public float[] groundColor;
     }
     
 }

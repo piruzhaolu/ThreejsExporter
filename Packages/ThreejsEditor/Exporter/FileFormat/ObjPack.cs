@@ -11,6 +11,7 @@ namespace Piruzhaolu.ThreejsEditor
         public List<Obj> objects = new List<Obj>();
         public List<Mat> materials = new List<Mat>();
         public List<Geometrie> geometries = new List<Geometrie>();
+        public List<object> sceneDatas = new List<object>();
         
 
         internal void Add(Mat mat)
