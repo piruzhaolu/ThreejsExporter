@@ -94,6 +94,16 @@ namespace Piruzhaolu.ThreejsEditor
                 };
                 objPack.sceneDatas.Add(d);
             }
+
+            if (RenderSettings.skybox != null)
+            {
+                if (RenderSettings.skybox.shader.name == "Skybox/6 Sided")
+                {
+                    var d = new ObjDataSkybox(RenderSettings.skybox);
+                    objPack.sceneDatas.Add(d);
+                }
+            }
+            
         }
         
 

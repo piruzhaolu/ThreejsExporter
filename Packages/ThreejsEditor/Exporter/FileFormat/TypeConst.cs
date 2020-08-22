@@ -9,5 +9,7 @@
         public const string HemisphereLight = "hemisphereLight";
         public const string AmbientLight = "ambientLight";
 
+        public const string Skybox = "skybox";
+
     }
 }

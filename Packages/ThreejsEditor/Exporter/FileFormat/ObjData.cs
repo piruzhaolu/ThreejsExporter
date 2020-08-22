@@ -92,5 +92,39 @@ namespace Piruzhaolu.ThreejsEditor
         public float[] skyColor;
         public float[] groundColor;
     }
+
+    [Serializable]
+    public class ObjDataSkybox : ObjData
+    {
+        public ObjDataSkybox(Material skymat)
+        {
+            type = TypeConst.Skybox;
+
+            px = TexId(skymat, "_LeftTex");
+            nx = TexId(skymat, "_RightTex");
+            
+            py = TexId(skymat, "_UpTex");
+            ny = TexId(skymat, "_DownTex");
+            
+            pz = TexId(skymat, "_FrontTex");
+            nz = TexId(skymat, "_BackTex");
+        }
+
+        private string TexId(Material skymat, string texName)
+        {
+            var tpx = AssetDatabase.TrySave<Tex2d>(skymat.GetTexture(texName) as Texture2D);
+            if (tpx != null) return tpx.id;
+            return "";
+        }
+
+        public string px;
+        public string nx;
+        public string py;
+        public string ny;
+        public string pz;
+        public string nz;
+
+
+    }
     
 }

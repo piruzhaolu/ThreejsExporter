@@ -96,7 +96,15 @@ export class ObjectLoader extends THREE.FileLoader {
                                 1
                             );
                             mThis._parent.add(light);
+                        } else if (obj.type == "skybox") {
+                            let cubeTextureLoader = new THREE.CubeTextureLoader();
+                            mThis._parent.background = cubeTextureLoader.load( [
+                                mThis._routing(obj.px), mThis._routing(obj.nx),
+                                mThis._routing(obj.py), mThis._routing(obj.ny),
+                                mThis._routing(obj.pz), mThis._routing(obj.nz)
+                            ]);
                         }
+
                     }
 
                 }
