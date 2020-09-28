@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class ForCreate : MonoBehaviour
 {
@@ -30,10 +31,16 @@ public class ForCreate : MonoBehaviour
             
             var block = new MaterialPropertyBlock();
             block.SetColor("_BaseColor", Random.ColorHSV());
+            block.SetFloat("_Smoothness", Random.Range(0,1f));
+            block.SetFloat("_Metallic", Random.Range(0,1f));
             c.GetComponent<MeshRenderer>().SetPropertyBlock(block);
         }
         
-        
+        RenderPipelineManager.endCameraRendering+= delegate(ScriptableRenderContext context, Camera camera1)
+        {
+            
+            
+        };
         
     }
 

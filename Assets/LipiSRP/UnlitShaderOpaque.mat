@@ -9,7 +9,7 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: UnlitShaderOpaque
   m_Shader: {fileID: 4800000, guid: 4a97212f5bf41aa48a53c25ab27a758b, type: 3}
-  m_ShaderKeywords: 
+  m_ShaderKeywords: _CLIPPING
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -61,6 +61,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _BumpScale: 1
+    - _Clipping: 1
     - _Cutoff: 0.503
     - _DetailNormalMapScale: 1
     - _DstBlend: 10
@@ -75,7 +76,7 @@ Material:
     - _SpecularHighlights: 1
     - _SrcBlend: 5
     - _UVSec: 0
-    - _ZWrite: 0
+    - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.69003546, g: 0.1607843, b: 0.83137256, a: 0.7882353}
     - _Color: {r: 1, g: 1, b: 1, a: 1}

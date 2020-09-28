@@ -4,6 +4,8 @@
     {
         _BaseMap("Texture",2D) = "white"{}
         _BaseColor("Color", Color) = (1.0,1.0,1.0,1.0)
+        _Metallic("Metallic",Range(0,1)) = 0
+        _Smoothness("Smoothness",Range(0,1)) = 0.5
 //        _Cutoff("Alpha Cutoff", Range(0.0, 1.0)) = 0.5
 //        [Toggle(_CLIPPING)] _Clipping("Alpha Clipping", Float) = 0
 //        [Enum(UnityEngine.Rendering.BlendMode)] _SrcBlend("Scr Blend",Float) = 1
@@ -27,6 +29,11 @@
             #pragma shader_feature _CLIPPING
             #pragma multi_compile_instancing
             #include "./ShaderLibrary/Common.hlsl"
+            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/CommonMaterial.hlsl"
+            #include "./ShaderLibrary/Surface.hlsl"
+            #include "./ShaderLibrary/Light.hlsl"
+            #include "./ShaderLibrary/BRDF.hlsl"
+            #include "./ShaderLibrary/Lighting.hlsl"
 
             // CBUFFER_START(UnityPerMaterial)
             //     float4 _BaseColor;
@@ -40,9 +47,13 @@
             //float4 _BaseColor;
                 UNITY_DEFINE_INSTANCED_PROP(float4, _BaseMap_ST)
                 UNITY_DEFINE_INSTANCED_PROP(float4, _BaseColor)
+            
                 // UNITY_DEFINE_INSTANCED_PROP(float, _Cutoff)
+                UNITY_DEFINE_INSTANCED_PROP(float, _Metallic)
+                UNITY_DEFINE_INSTANCED_PROP(float, _Smoothness)
             UNITY_INSTANCING_BUFFER_END(UnityPerMaterial)
 
+            
 
             struct Attributes
             {
@@ -55,6 +66,7 @@
             struct Varyings
             {
                 float4 positionCS:SV_POSITION;
+                float3 positionWS:VAR_POSITION; //
                 float3 normalWS:VAR_NORMAL;
                 float2 baseUV :VAR_BASE_UV;
                 UNITY_VERTEX_INPUT_INSTANCE_ID
@@ -67,9 +79,8 @@
                 Varyings output;
                 UNITY_SETUP_INSTANCE_ID(input);
                 UNITY_TRANSFER_INSTANCE_ID(input, output);
-                float3 positionWS = TransformObjectToWorld(input.positionOS);
-
-                output.positionCS = TransformWorldToHClip(positionWS);
+                output.positionWS = TransformObjectToWorld(input.positionOS);
+                output.positionCS = TransformWorldToHClip(output.positionWS);
                 output.normalWS = TransformObjectToWorldNormal(input.normalOS);
                 float4 baseST = UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _BaseMap_ST);
                 output.baseUV = input.baseUV * baseST.xy + baseST.zw;
@@ -82,13 +93,24 @@
                 float4 baseMap = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, input.baseUV);
                 float4 baseColor = UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _BaseColor);
                 float4 base = baseMap * baseColor;
+
+                Surface surface;
+                surface.normal = normalize(input.normalWS);
+                surface.viewDirection = normalize(_WorldSpaceCameraPos-input.positionWS);
+                surface.color = base.rgb;
+                surface.alpha = base.a;
+                surface.metallic = UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _Metallic);
+                surface.smoothness = UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _Smoothness);
+                
                 // base.rgb = abs(length(input.normalWS)-1.0) *10.0;
-                base.rgb = normalize(input.normalWS);
+                //base.rgb = normalize(input.normalWS);
                 // #if defined(_CLIPPING)
                 //     clip(base.a - UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _Cutoff));
                 // #endif
 
-                return base;
+                BRDF brdf = GetBRDF(surface);
+                float3 color = GetLighting(surface,brdf);
+                return float4(color, surface.alpha);
             }
             ENDHLSL
         }

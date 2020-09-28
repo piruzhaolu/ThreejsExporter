@@ -60,14 +60,19 @@
   <ItemGroup>
      <Compile Include="Assets\LipiSRP\ForCreate.cs" />
      <Compile Include="Assets\LipiSRP\Runtime\LiPipelineAsset.cs" />
+     <Compile Include="Assets\LipiSRP\Runtime\Lighting.cs" />
      <Compile Include="Assets\NewBehaviourScript.cs" />
      <Compile Include="Assets\NewBehaviourScript1.cs" />
      <None Include="Assets\LipiSRP\ShaderLibrary\Common.hlsl" />
+     <None Include="Assets\LipiSRP\ShaderLibrary\Lighting.hlsl" />
      <None Include="Assets\LipiSRP\ShaderLibrary\UnityInput.hlsl" />
      <None Include="Assets\LipiSRP\NewUnlitShader.shader" />
      <None Include="Assets\LipiSRP\UnlitShader.shader" />
      <None Include="Assets\LipiSRP\UnlitShaderLit.shader" />
+     <None Include="Assets\LipiSRP\ShaderLibrary\BRDF.hlsl" />
      <None Include="Assets\LipiSRP\UnlitShaderOpaque.shader" />
+     <None Include="Assets\LipiSRP\ShaderLibrary\Surface.hlsl" />
+     <None Include="Assets\LipiSRP\ShaderLibrary\Light.hlsl" />
      <None Include="Assets\PolygonCity\Change_Log.txt" />
      <None Include="Assets\LipiSRP\LiPass.hlsl" />
  <Reference Include="Unity.RenderPipeline.Universal.ShaderLibrary">

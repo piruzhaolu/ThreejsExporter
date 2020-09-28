@@ -32,12 +32,14 @@ public class LiPipeline : RenderPipeline
             Render(context, camera);
         }
     }
-
-
+    
+    Lighting lighting = new Lighting();
     private void Render(ScriptableRenderContext context, Camera camera)
     {
         context.SetupCameraProperties(camera);
 
+        
+        
         var buffer = new CommandBuffer
         {
             name = camera.name
@@ -64,6 +66,7 @@ public class LiPipeline : RenderPipeline
         
         buffer.BeginSample("RenderLoop.Draw");
         var cullingResults = context.Cull(ref cullingParameters);
+        lighting.Setup(context,cullingResults); //设置光源数据
 
         var drawingSettings = new DrawingSettings(_unlitShaderTagId, new SortingSettings(camera));
         
